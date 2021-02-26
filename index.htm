@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ทดลองระเบิดเรือ v0.1</title>
+</head>
+
+<body>
+<script>
+	var dice = 1;
+	var ship = 0;
+	var mute = false;
+	var fail = false;
+	var failstack = 0;
+	var softcap = 0;
+	var attempt = 0;
+	var enchant = 0;
+	var data = '{"0":{"base": [30, 25, 20, 15, 12, 10, 5, 3, 2, 1],"refail":[10, 14, 15, 17, 20, 23, 32, 34, 40, 60]},"1":{"base":["70, 60, 50, 45, 40, 30, 25, 20, 15, 12"],"refail":[8, 9, 14, 15, 18, 19, 22, 25, 30, 25]},"2":{"base":[10, 9, 7, 5, 4, 2.5, 1.5, 1, 0.8, 0.5],"refail":[30, 32, 42, 47, 51, 52, 75, 85, 110, 120]}}';
+	data = JSON.parse(data);
+	function _Dice() {
+		let rand = [], roll = 0, sum = 0;
+		for(let i = 1; i <= dice; i++) {
+			roll = (Math.random() * (100 / dice)).toFixed(2);
+			rand.push(roll);
+			sum += parseFloat(roll);
+		}
+		return {sum , rand}
+	}
+
+	function _Enchant() {
+		let dice = _Dice(), res = "";
+		if (_getSucc() >= dice.sum) {
+			playsound(1);
+			res = "<font color='green'><strong>(SUCCESS XD)</strong></font>";
+		} else {
+			playsound(0);
+			res = "<font color='red'><strong>(FAIL :c)</strong></font>";
+			if (fail) {
+				failstack++;
+				document.getElementById('failstack').value = failstack;
+				_updateRate();
+			}
+		}
+		attempt++;
+		document.getElementById('logs').innerHTML += "Attempt: " + attempt +" #[" + dice.rand.toString() + "] Your Roll => " + dice.sum.toFixed(2) +"% " + res + "<br>";
+	}
+	
+	function _getSucc(threshold = 70) {
+		let base = data[ship].base[enchant];
+		let a = .1 * base, b = .02 * base;
+		softcap = Math.ceil((threshold - base) / a);
+		softcap = softcap < 0 ? 0 : softcap;
+		let c = Math.ceil((90 - (base + a * softcap)) / b + softcap);
+		if (failstack <= softcap) return base + a * failstack;
+		if (failstack > softcap && failstack < c) return base + a * softcap + b * (failstack - softcap);
+		if (failstack >= c) return 90;
+	}
+	function _updateRate() {
+		let r = _getSucc();
+		document.getElementById('succrate').innerHTML = "<font size = '6'><strong>" + r.toFixed(2) + "%</strong></font>";
+		return r;
+	}
+	function playsound(b) {
+		if (mute) return;
+		let sound;
+		try {
+			switch(b) {
+				case 0:
+					new Audio('./sound/fail.wav').play();
+					break;
+				case 1:
+					new Audio('./sound/succ.wav').play();
+					break;
+			}
+		} catch(e) {
+			console.log(e);
+		}
+	}
+	function setdice(i) {dice = i;}
+	function setfailstack(i) {failstack = (i == "" || i < 0 || i == null) ? 0 : i;}
+	function setmute() {mute = document.getElementById('mutesound').checked;}
+	function setfail() {fail = document.getElementById('increasefail').checked;}
+	function setenchant(i) {enchant = i;}
+	function setship(i) {ship = i;}
+</script>
+<table width="360" border="0" align="center">
+  <tbody>
+    <tr>
+      <td width="220" valign="top">
+      <select name="shipgear" id="shipgear" style="width: 220px;" onchange="setship(this.value);_updateRate();">
+        <option value="0">การค้า/แกลลีย์</option>
+        <option value="1">คาร์แร็ค (เขียว)</option>
+        <option value="2">คาร์แร็ค (ฟ้า)</option>
+      </select></td>
+      <td width="130" rowspan="3" align="center" valign="top"><input type="button" name="enchant" id="enchant" value="Enchant" style="width: 130px; height: 75px;" onclick="_Enchant();"></td>
+    </tr>
+    <tr valign="top">
+      <td>
+      <input name="failstack" type="text" id="failstack" placeholder="Fail Stack" style="width: 210px; text-align: center;" onchange="setfailstack(this.value);_updateRate();"></td>
+    </tr>
+    <tr valign="top">
+      <td><select name="dice" id="dice" style="width: 220px;" onchange="setdice(this.value);">
+        <option value="1">ดวงแบบมนุษย์ทั่วไป ลูกเต๋า1 ลูก</option>
+        <option value="2">ขัดดวงลูกเต๋า 2 ลูก</option>
+        <option value="4">ขัดดวงลูกเต๋า 4 ลูก</option>
+        <option value="6">ขัดดวงลูกเต๋า 6 ลูก</option>
+        <option value="8">ขัดดวงลูกเต๋า 8 ลูก</option>
+        <option value="10">ขัดดวงลูกเต๋า 10 ลูก</option>
+      </select></td>
+    </tr>
+    <tr valign="top">
+      <td>
+		  <input type="button" name="clear" id="clear" value="Clear" style="width: 70px;" onclick="document.getElementById('logs').innerHTML='';attempt=0;">
+        <input type="button" name="softcap" id="softcap" value="Softcap" style="width: 70px;" onclick="document.getElementById('failstack').value=softcap;failstack=softcap;_updateRate();">
+      <input type="button" name="refail" id="refail" value="FS แนะนำ" style="width: 70px;" onclick="document.getElementById('failstack').value=data[ship].refail[enchant];failstack=data[ship].refail[enchant];_updateRate();">
+      </td>
+      <td width="130" align="center" valign="middle">
+        <select name="enchant" id="enchant" style="width: 130px; text-align-last: center;" onchange="setenchant(this.value);_updateRate();">
+          <option value="0">+1</option>
+          <option value="1">+2</option>
+          <option value="2">+3</option>
+          <option value="3">+4</option>
+          <option value="4">+5</option>
+          <option value="5">+6</option>
+          <option value="6">+7</option>
+          <option value="7">+8</option>
+          <option value="8">+9</option>
+          <option value="9">+10</option>
+      </select></td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <input type="checkbox" name="increasefail" id="increasefail" onchange="setfail();">
+        <label for="increasefail">เพิ่ม Failstack เมื่อล้มเหลว</label>
+        <br>
+  <input type="checkbox" name="mutesound" id="mutesound" onchange="setmute();">
+        <label for="mutesound">ปิดเสียง Effect ในการอัพเกรด</label></td>
+      <td width="130" align="center" valign="middle" id="succrate"><font size = '10'><strong>0%</strong></font></td>
+    </tr>
+  </tbody>
+</table>
+<center><p id="logs"></p><p>จัดทำโดย Fam丶Fan丶Fan - ทดลองระเบิดเรือ v0.1</p></center>
+<script>_updateRate();</script>
+</body>
+</html>
