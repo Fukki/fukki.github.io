@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <!-- Primary Meta Tags -->
 <title>[BDO] ทดลองระเบิดเรือ v0.2</title>
-<meta name="title" content="[BDO] ทดลองระเบิดเรือ v0.1">
+<meta name="title" content="[BDO] ทดลองระเบิดเรือ v0.3">
 <meta name="description" content="ทดสอบการตีบวกประดับเรือ">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fukki.github.io/">
-<meta property="og:title" content="[BDO] ทดลองระเบิดเรือ v0.2">
+<meta property="og:title" content="[BDO] ทดลองระเบิดเรือ v0.3">
 <meta property="og:description" content="ทดสอบการตีบวกประดับเรือ">
 <meta property="og:image" content="https://fukki.github.io/imgs/setsuna_meta.jpg">
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://fukki.github.io/">
-<meta property="twitter:title" content="[BDO] ทดลองระเบิดเรือ v0.2">
+<meta property="twitter:title" content="[BDO] ทดลองระเบิดเรือ v0.3">
 <meta property="twitter:description" content="ทดสอบการตีบวกประดับเรือ">
 <meta property="twitter:image" content="https://fukki.github.io/imgs/setsuna_meta.jpg">
 
@@ -29,7 +29,7 @@
 
 <body style="background-image: url('./imgs/setsuna.jpg');background-repeat: no-repeat;background-size: cover;background-attachment: fixed;background-position: 50% 0;left: 0;top: 0;min-height: 100%;opacity: 0.8;">
 <script>
-	var dice = 1;
+	var dice = 2;
 	var ship = 0;
 	var mute = false;
 	var fail = false;
@@ -122,8 +122,8 @@
     </tr>
     <tr valign="top">
       <td><select name="dice" id="dice" style="width: 220px;" onchange="setdice(this.value);">
-        <option value="1">ดวงแบบมนุษย์ทั่วไป ลูกเต๋า 1 ลูก</option>
-        <option value="2">เหนือมนุษย์ ขัดดวงลูกเต๋า 2 ลูก</option>
+        <option value="1">ดวงเด็กๆ ลูกเต๋า 1 ลูก</option>
+        <option value="2" selected>ดวงปกติ ขัดดวงลูกเต๋า 2 ลูก</option>
         <option value="4">เหนือมนุษย์ ขัดดวงลูกเต๋า 4 ลูก</option>
 		<option value="5">เหนือมนุษย์ ขัดดวงลูกเต๋า 5 ลูก</option>
         <option value="10">เหนือมนุษย์ ขัดดวงลูกเต๋า 10 ลูก</option>
